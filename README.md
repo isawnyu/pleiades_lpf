@@ -36,3 +36,9 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 - [ ] dumps
     - [x] wrap `json` function from standard library
     - [ ] expect `FeatureCollection` instead of `dict`
+
+## References
+
+- [The Linked Places format (LPF)](https://github.com/LinkedPasts/linked-places-format?tab=readme-ov-file)
+- [Python Standard Library 3.14 JSON](https://github.com/python/cpython/blob/3.14/Lib/json/__init__.py)
+- [RFC 7946 The GeoJSON Format](https://datatracker.ietf.org/doc/html/rfc7946)
