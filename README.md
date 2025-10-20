@@ -10,15 +10,25 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 
 - [ ] Geometry
     - [x] Stub the class (in geometry.py)
+    - [ ] `asdict` function
+    - [ ] other functionality and data (this is largely untouched as of yet)
 
 - [ ] Feature
     - [x] Stub the class (in geometry.py)
+    - [x] Static attribute `type`="Feature" 
     - [x] `asdict` function
-    - [ ] `properties` attribute (dictionary)
-    - [ ] `geometry` attribute
+    - [x] `properties` attribute (dictionary)
+        - [x] Validation of the `properties` attribute and its contents
+        - [ ] methods for adding/getting parts of the `properties` attribute (implement as needed)
+    - [x] `geometry` attribute
 
 - [ ] FeatureCollection
     - [x] Stub the class (in geometry.py)
+    - [x] Static attribute `type`="FeatureCollection" 
+    - [x] Attribute `features`: `list`
+    - [x] Attribute `context`: `str`
+    - [ ] Attribute validation?
+    - [ ] `asdict` functions
 
 - [ ] identify and stub other classes following GeoJSON and LPF specifications.
 
