@@ -1,0 +1,80 @@
+{
+  "count": 1,
+  "pagesize": 1,
+  "parameters": {
+    "id": "7637009"
+  },
+  "note": null,
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "types": [
+        {
+          "label": "",
+          "sourceLabel": "Settlement",
+          "identifier": "",
+          "gn_class": ""
+        }
+      ],
+      "links": [],
+      "related": [],
+      "whens": [
+        {
+          "timespans": [
+            {
+              "end": {
+                "latest": 2020
+              },
+              "start": {
+                "earliest": 2020
+              }
+            }
+          ]
+        }
+      ],
+      "descriptions": [],
+      "depictions": [],
+      "type": "Feature",
+      "uri": "https://whgazetteer.org/api/place/7637009",
+      "properties": {
+        "place_id": 7637009,
+        "dataset_label": "ChadSettlements",
+        "dataset_title": "Chad Settlements",
+        "dataset_uri": "https://whgazetteer.org/datasets/1404/places",
+        "src_id": "6",
+        "title": "Rahat Salak",
+        "ccodes": [
+          "TD"
+        ],
+        "fclasses": [],
+        "minmax": [
+          2020,
+          2020
+        ],
+        "timespans": [
+          [
+            2020,
+            2020
+          ]
+        ]
+      },
+      "geometry": {
+        "place_id": 7637009,
+        "src_id": "6",
+        "type": "Point",
+        "geowkt": "POINT(18.1333333 14.2333333)",
+        "coordinates": [
+          18.1333333,
+          14.2333333
+        ],
+        "geom_src": null,
+        "citation": {
+          "id": "https://data.humdata.org/dataset/chad-populated-places-settlements",
+          "label": ""
+        },
+        "title": "Rahat Salak",
+        "ds": 1404
+      }
+    }
+  ]
+}

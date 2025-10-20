@@ -40,6 +40,7 @@ class Feature:
         geometry: Geometry | None = None,
         properties: dict = dict(),
         id: str | int | None = None,
+        **kwargs,  # kwargs are ignored
     ):
         # GeoJSON spec
         self._type = "Feature"  # Fixed value
@@ -57,6 +58,24 @@ class Feature:
         self.relations = []  # List of relations to other features
         self.descriptions = []  # List of descriptions
         self.depictions = []  # List of depictions (e.g., images)
+
+    def asdict(self):
+        """Return a dictionary representation of the Feature."""
+        result = {
+            "type": self.type,
+            "properties": self.properties,
+            # "geometry": self.geometry,
+            # "when": self.when,
+            # "names": self.names,
+            # "types": self.types,
+            # "links": self.links,
+            # "relations": self.relations,
+            # "descriptions": self.descriptions,
+            # "depictions": self.depictions,
+        }
+        if self.id is not None:
+            result["@id"] = self.id  # LPF uses @id for identifiers
+        return result
 
     @property
     def type(self):
@@ -126,10 +145,12 @@ class FeatureCollection:
 
     DEFAULT_LPF_CONTEXT = "https://raw.githubusercontent.com/LinkedPasts/linked-places/master/linkedplaces-context-v1.1.jsonld"
 
-    def __init__(self, context: str = DEFAULT_LPF_CONTEXT, features: list = [Feature]):
+    def __init__(
+        self, context: str = DEFAULT_LPF_CONTEXT, features: list = [Feature], **kwargs
+    ):  # kwargs are ignored
         # GeoJSON spec
         self._type = "FeatureCollection"  # Fixed value
-        self.features = features  # List of Feature objects
+        self.features = [Feature(**f) for f in features]  # List of Feature objects
 
         # LPF extension
         self.context = context  # LPF context URI
