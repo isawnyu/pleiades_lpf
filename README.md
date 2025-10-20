@@ -1,2 +1,38 @@
 # pleiades_lpf: Linked Places Format (LPF) tools for Pleiades
 
+`pleiades_lpf` is written by [Tom Elliott](https://isaw.nyu.edu/people/staff/tom-elliott) for the [Pleiades gazetteer of ancient places](https://pleiades.stoa.org), a project and publication of the [Institute for the Study of the Ancient World](https://isaw.nyu.edu) at New York University. 
+
+## Roadmap 
+
+At present, still a long way to go on fleshing out the gazetteer model. Tests pass for what is implemented; I am using a JSON LPF file from the [World Historical Gazetteer](https://whgazetteer.org/) for testing file loading.
+
+### Classes
+
+- [ ] Geometry
+    - [x] Stub the class (in geometry.py)
+
+- [ ] Feature
+    - [x] Stub the class (in geometry.py)
+    - [x] `asdict` function
+    - [ ] `properties` attribute (dictionary)
+    - [ ] `geometry` attribute
+
+- [ ] FeatureCollection
+    - [x] Stub the class (in geometry.py)
+
+- [ ] identify and stub other classes following GeoJSON and LPF specifications.
+
+### package-level functions
+
+- [ ] load
+    - [x] wrap `json` function from standard library
+    - [ ] return `FeatureCollection` instead of `dict`
+- [ ] loads
+    - [x] wrap `json` function from standard library
+    - [ ] return `FeatureCollection` instead of `dict`
+- [ ] dump
+    - [x] wrap `json` function from standard library
+    - [ ] expect `FeatureCollection` instead of `dict`
+- [ ] dumps
+    - [x] wrap `json` function from standard library
+    - [ ] expect `FeatureCollection` instead of `dict`
