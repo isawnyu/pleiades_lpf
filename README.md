@@ -28,7 +28,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [x] Static attribute `type`="FeatureCollection" 
     - [x] Attribute `features`: `list`
     - [x] Attribute `context`: `str`
-    - [ ] Attribute validation?
+    - [x] Attribute validation?
     - [ ] `asdict` function
     - [x] tests
 
