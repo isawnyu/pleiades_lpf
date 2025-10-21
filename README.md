@@ -34,7 +34,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 
 - [ ] CitedWork
     - Note that the structure outlined below deviates from LPF v1
-    - [ ] Stub the class (in works.py)
+    - [ ] Stub the class (in citations.py)
     - [ ] attribute: `@id`: `Identifier`
     - [ ] attribute: `short_title`: `str`
     - [ ] attribute: `formatted_citation`: `str`
@@ -45,7 +45,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 
 - [ ] Citation
     - Note that the structure outlined below deviates from LPF v1
-    - [ ] Stub the class (in works.py)
+    - [ ] Stub the class (in citations.py)
     - [ ] attribute: `@id`: `Identifier`
     - [ ] attribute: `work`: reference corresponding `CitedWork.@id`
     - [ ] attribute: `citation_detail`: `str`
