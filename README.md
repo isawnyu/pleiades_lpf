@@ -9,12 +9,12 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 ### Classes
 
 - [ ] Geometry
-    - [x] Stub the class (in geometry.py)
+    - [x] Stub the class (in gazetteer.py)
     - [ ] `asdict` function
     - [ ] other functionality and data (this is largely untouched as of yet)
 
 - [ ] Feature
-    - [x] Stub the class (in geometry.py)
+    - [x] Stub the class (in gazetteer.py)
     - [x] Static attribute `type`="Feature" 
     - [x] `asdict` function
     - [x] `properties` attribute (dictionary)
@@ -24,13 +24,46 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [x] tests
 
 - [ ] FeatureCollection
-    - [x] Stub the class (in geometry.py)
+    - [x] Stub the class (in gazetteer.py)
     - [x] Static attribute `type`="FeatureCollection" 
     - [x] Attribute `features`: `list`
     - [x] Attribute `context`: `str`
     - [x] Attribute validation?
     - [ ] `asdict` function
     - [x] tests
+
+- [ ] CitedWork
+    - Note that the structure outlined below deviates from LPF v1
+    - [ ] Stub the class (in works.py)
+    - [ ] attribute: `@id`: `Identifier`
+    - [ ] attribute: `short_title`: `str`
+    - [ ] attribute: `formatted_citation`: `str`
+    - [ ] attribute: `access_url`: `url`
+    - [ ] attribute: `bibliographic_url`: `url`
+    - [ ] `asdict` function
+    - [ ] tests
+
+- [ ] Citation
+    - Note that the structure outlined below deviates from LPF v1
+    - [ ] Stub the class (in works.py)
+    - [ ] attribute: `@id`: `Identifier`
+    - [ ] attribute: `work`: reference corresponding `CitedWork.@id`
+    - [ ] attribute: `citation_detail`: `str`
+    - [ ] attribute: `url`: `url`
+    - [ ] `asdict` function
+    - [ ] tests
+    
+- [ ] FeatureType
+    - Note that the structure outlined below deviates from LPF v1
+    - [ ] Stub the class (in gazetteer.py)
+    - [ ] attribute: `@id`: `Identifier`
+    - [ ] attribute: `source`: `Citation`
+    - [ ] attribute: `label`: `str`
+    - [ ] attribute: `aliases`: `list` of `str` 
+    - [ ] attribute `close_matches`: `list` of `Citation`s
+    - [ ] attribute `When`
+    - [ ] `asdict` function
+    - [ ] tests
 
 - [ ] identify and stub other classes following GeoJSON and LPF specifications.
 
