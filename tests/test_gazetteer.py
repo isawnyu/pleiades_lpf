@@ -9,7 +9,7 @@
 Test the gazetteer module.
 """
 
-from pleiades_lpf.gazetteer import Feature, LPFValidationError
+from pleiades_lpf.gazetteer import Feature, FeatureCollection, LPFValidationError
 from pytest import raises
 
 
@@ -54,3 +54,18 @@ class TestFeature:
         }
         with raises(LPFValidationError):
             Feature(properties=props)
+
+
+class TestFeatureCollection:
+    def test_feature_collection_creation(self):
+        """Test creating a FeatureCollection with valid features."""
+        feature1 = Feature(
+            properties={"title": "Place 1", "ccodes": ["US"], "fclasses": ["P"]}
+        )
+        feature2 = Feature(
+            properties={"title": "Place 2", "ccodes": ["FR"], "fclasses": ["A"]}
+        )
+        fc = FeatureCollection(features=[feature1, feature2])
+        assert len(fc.features) == 2
+        assert fc.features[0].properties["title"] == "Place 1"
+        assert fc.features[1].properties["title"] == "Place 2"

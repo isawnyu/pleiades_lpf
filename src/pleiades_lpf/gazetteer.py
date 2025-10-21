@@ -146,14 +146,34 @@ class FeatureCollection:
     DEFAULT_LPF_CONTEXT = "https://raw.githubusercontent.com/LinkedPasts/linked-places/master/linkedplaces-context-v1.1.jsonld"
 
     def __init__(
-        self, context: str = DEFAULT_LPF_CONTEXT, features: list = [Feature], **kwargs
+        self,
+        context: str = DEFAULT_LPF_CONTEXT,
+        features: list = [Feature | dict],
+        **kwargs,
     ):  # kwargs are ignored
         # GeoJSON spec
         self._type = "FeatureCollection"  # Fixed value
-        self.features = [Feature(**f) for f in features]  # List of Feature objects
+        self.features = []  # List of Feature objects
+        for f in features:
+            if isinstance(f, dict):
+                self.features.append(Feature(**f))
+            elif isinstance(f, Feature):
+                self.features.append(f)
+            else:
+                raise LPFValidationError(
+                    f"FeatureCollection:features must be a list of Feature objects or dicts, found {type(f)}"
+                )
 
         # LPF extension
         self.context = context  # LPF context URI
+
+    def asdict(self):
+        """Return a dictionary representation of the FeatureCollection."""
+        return {
+            "type": self.type,
+            "features": [f.asdict() for f in self.features],
+            "@context": self.context,
+        }
 
     @property
     def type(self):
