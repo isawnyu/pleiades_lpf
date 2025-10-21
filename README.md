@@ -21,6 +21,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
         - [x] Validation of the `properties` attribute and its contents
         - [ ] methods for adding/getting parts of the `properties` attribute (implement as needed)
     - [x] `geometry` attribute
+    - [x] tests
 
 - [ ] FeatureCollection
     - [x] Stub the class (in geometry.py)
@@ -28,7 +29,8 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [x] Attribute `features`: `list`
     - [x] Attribute `context`: `str`
     - [ ] Attribute validation?
-    - [ ] `asdict` functions
+    - [ ] `asdict` function
+    - [x] tests
 
 - [ ] identify and stub other classes following GeoJSON and LPF specifications.
 
