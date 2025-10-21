@@ -9,7 +9,12 @@
 Test the gazetteer module.
 """
 
-from pleiades_lpf.gazetteer import Feature, FeatureCollection, LPFValidationError
+from pleiades_lpf.gazetteer import (
+    Feature,
+    FeatureCollection,
+    LPFTypeError,
+    LPFValueError,
+)
 from pytest import raises
 
 
@@ -22,7 +27,7 @@ class TestFeature:
 
     def test_invalid_properties_not_dict(self):
         """Test that non-dictionary properties raise an error."""
-        with raises(TypeError):
+        with raises(LPFTypeError):
             Feature(properties="not a dict")  # type: ignore
 
     def test_missing_required_key(self):
@@ -32,7 +37,7 @@ class TestFeature:
             "ccodes": ["US"],
             # Missing 'fclasses'
         }
-        with raises(LPFValidationError):
+        with raises(LPFValueError):
             Feature(properties=props)
 
     def test_invalid_key_type(self):
@@ -42,7 +47,7 @@ class TestFeature:
             "ccodes": "US",  # Should be a list
             "fclasses": ["P"],
         }
-        with raises(TypeError):
+        with raises(LPFTypeError):
             Feature(properties=props)
 
     def test_invalid_list_item_type(self):
@@ -52,7 +57,7 @@ class TestFeature:
             "ccodes": ["US"],
             "fclasses": [123],  # Should be strings
         }
-        with raises(TypeError):
+        with raises(LPFTypeError):
             Feature(properties=props)
 
 

@@ -11,7 +11,7 @@ Test loading/dumping.
 import json
 from pathlib import Path
 from pleiades_lpf import dump, dumps, load, loads
-from pleiades_lpf.gazetteer import FeatureCollection, LPFValidationError
+from pleiades_lpf.gazetteer import FeatureCollection
 from pytest import raises
 
 test_data_dir = Path(__file__).parent / "data"

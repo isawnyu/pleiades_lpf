@@ -13,8 +13,14 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class LPFValidationError(Exception):
-    """Custom exception for LPF validation errors."""
+class LPFValueError(ValueError):
+    """Custom exception for LPF value errors."""
+
+    pass
+
+
+class LPFTypeError(TypeError):
+    """Custom exception for LPF type errors."""
 
     pass
 
@@ -92,7 +98,7 @@ class Feature:
         """
         # Validate that properties is a dictionary
         if not isinstance(properties, dict):
-            raise TypeError(
+            raise LPFTypeError(
                 f"Feature:properties must be a dictionary, not {type(properties)}"
             )
 
@@ -100,11 +106,11 @@ class Feature:
         expected = {"title": str, "ccodes": list, "fclasses": list}
         for key, expected_type in expected.items():
             if key not in properties:
-                raise LPFValidationError(
+                raise LPFValueError(
                     f"Feature:properties is missing required key: {key}"
                 )
             if not isinstance(properties[key], expected_type):
-                raise TypeError(
+                raise LPFTypeError(
                     f"Feature:properties[{key}] must be of type {expected_type}, not {type(properties[key])}"
                 )
         # Validate types of individual items in ccodes and fclasses
@@ -112,7 +118,7 @@ class Feature:
         for key, expected_subtype in expected.items():
             for i, item in enumerate(properties.get(key, [])):
                 if not isinstance(item, expected_subtype):
-                    raise TypeError(
+                    raise LPFTypeError(
                         f"Feature:properties[{key}] must be a list of {expected_subtype}, found {type(item)} in position {i}"
                     )
         # Warn that actual values of ccodes are not validated
@@ -132,7 +138,7 @@ class Feature:
         }
         for i, fclass in enumerate(properties.get("fclasses", [])):
             if fclass not in VALID_FCLASSES:
-                raise LPFValidationError(
+                raise LPFValueError(
                     f"Feature:properties['fclasses'] contains invalid fclass '{fclass}' in position {i}. Valid fclasses are: {list(VALID_FCLASSES.keys())}"
                 )
 
@@ -160,7 +166,7 @@ class FeatureCollection:
             elif isinstance(f, Feature):
                 self.features.append(f)
             else:
-                raise TypeError(
+                raise LPFTypeError(
                     f"FeatureCollection:features must be a list of Feature objects or dicts, found {type(f)}"
                 )
 
