@@ -8,6 +8,7 @@
 """
 Test loading/dumping.
 """
+import json
 from pathlib import Path
 from pleiades_lpf import dump, dumps, load, loads
 from pleiades_lpf.gazetteer import FeatureCollection, LPFValidationError
@@ -22,10 +23,9 @@ class TestModule:
         filename = "whg_7637009.json"
         filepath = test_data_dir / filename
         with open(filepath, "r", encoding="utf-8") as f:
-            obj = load(f)
+            fc = load(f)
         del f
-        assert isinstance(obj, dict)
-        fc = FeatureCollection(**obj)
+        assert isinstance(fc, FeatureCollection)
         assert isinstance(fc, FeatureCollection)
         assert len(fc.features) == 1
         f = fc.features[0]

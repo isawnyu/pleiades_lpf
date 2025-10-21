@@ -22,6 +22,7 @@ __all__ = [
 __author__ = "Tom Elliott <tom.elliott@nyu.edu>"
 
 import json
+from .gazetteer import FeatureCollection
 
 
 def dump(obj, fp, **kwargs):
@@ -36,7 +37,8 @@ def dumps(obj, **kwargs):
 
 def load(fp, **kwargs):
     """Deserialize LPF object from a file-like object containing JSON."""
-    return json.load(fp, **kwargs)
+    j = json.load(fp, **kwargs)
+    return FeatureCollection(**j)
 
 
 def loads(s, **kwargs):

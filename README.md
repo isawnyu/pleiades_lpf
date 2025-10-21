@@ -36,7 +36,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
 
 - [ ] load
     - [x] wrap `json` function from standard library
-    - [ ] return `FeatureCollection` instead of `dict`
+    - [x] return `FeatureCollection` instead of `dict`
 - [ ] loads
     - [x] wrap `json` function from standard library
     - [ ] return `FeatureCollection` instead of `dict`
