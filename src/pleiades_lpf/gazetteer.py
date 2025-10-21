@@ -92,7 +92,7 @@ class Feature:
         """
         # Validate that properties is a dictionary
         if not isinstance(properties, dict):
-            raise LPFValidationError(
+            raise TypeError(
                 f"Feature:properties must be a dictionary, not {type(properties)}"
             )
 
@@ -104,7 +104,7 @@ class Feature:
                     f"Feature:properties is missing required key: {key}"
                 )
             if not isinstance(properties[key], expected_type):
-                raise LPFValidationError(
+                raise TypeError(
                     f"Feature:properties[{key}] must be of type {expected_type}, not {type(properties[key])}"
                 )
         # Validate types of individual items in ccodes and fclasses
@@ -112,7 +112,7 @@ class Feature:
         for key, expected_subtype in expected.items():
             for i, item in enumerate(properties.get(key, [])):
                 if not isinstance(item, expected_subtype):
-                    raise LPFValidationError(
+                    raise TypeError(
                         f"Feature:properties[{key}] must be a list of {expected_subtype}, found {type(item)} in position {i}"
                     )
         # Warn that actual values of ccodes are not validated
@@ -160,7 +160,7 @@ class FeatureCollection:
             elif isinstance(f, Feature):
                 self.features.append(f)
             else:
-                raise LPFValidationError(
+                raise TypeError(
                     f"FeatureCollection:features must be a list of Feature objects or dicts, found {type(f)}"
                 )
 

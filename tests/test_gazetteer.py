@@ -22,7 +22,7 @@ class TestFeature:
 
     def test_invalid_properties_not_dict(self):
         """Test that non-dictionary properties raise an error."""
-        with raises(LPFValidationError):
+        with raises(TypeError):
             Feature(properties="not a dict")  # type: ignore
 
     def test_missing_required_key(self):
@@ -42,7 +42,7 @@ class TestFeature:
             "ccodes": "US",  # Should be a list
             "fclasses": ["P"],
         }
-        with raises(LPFValidationError):
+        with raises(TypeError):
             Feature(properties=props)
 
     def test_invalid_list_item_type(self):
@@ -52,7 +52,7 @@ class TestFeature:
             "ccodes": ["US"],
             "fclasses": [123],  # Should be strings
         }
-        with raises(LPFValidationError):
+        with raises(TypeError):
             Feature(properties=props)
 
 
