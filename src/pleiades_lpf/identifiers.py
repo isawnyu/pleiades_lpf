@@ -8,6 +8,7 @@
 """
 Define identification classes
 """
+from .text import normalize_text
 from validators import url as validate_url
 
 VALID_IDENTIFIER_TYPES = {"url", "alphanumeric"}
@@ -15,12 +16,14 @@ VALID_IDENTIFIER_TYPES = {"url", "alphanumeric"}
 
 class Identifier:
     """
-    An identifier.
+    An identifier is a string value with a particular type.
     """
 
     def __init__(self, id_type: str, value: str):
         self._type = ""
         self._value = ""
+        self.id_type = id_type
+        self.id_value = value
 
     @property
     def id_type(self) -> str:
@@ -30,7 +33,7 @@ class Identifier:
     @id_type.setter
     def id_type(self, id_type: str):
         """Set the identifier type."""
-        id_type = id_type.strip()
+        id_type = normalize_text(id_type)
         if id_type not in VALID_IDENTIFIER_TYPES:
             raise ValueError(
                 f"Invalid identifier type: '{id_type}'. Expected one of {VALID_IDENTIFIER_TYPES}."
@@ -54,7 +57,7 @@ class Identifier:
             )
         elif self._type == "url" and not validate_url(value):
             raise ValueError(f"URL identifier value '{value}' must be a valid URL.")
-        self._value = value
+        self._value = normalize_text(value)
 
     def __str__(self) -> str:
         return self.id_value
