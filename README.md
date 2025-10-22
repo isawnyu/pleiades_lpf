@@ -43,10 +43,9 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - Note that the structure outlined below deviates from LPF v1
     - [ ] Stub the class (in gazetteer.py)
     - [ ] attribute: `@id`: `Identifier`
-    - [ ] attribute: `source`: `Citation`
+    - [ ] attribute: `citations`: `list` of `Citation`s
     - [ ] attribute: `label`: `str`
     - [ ] attribute: `aliases`: `list` of `str` 
-    - [ ] attribute `close_matches`: `list` of `Citation`s
     - [ ] attribute `When`
     - [ ] `asdict` function
     - [ ] tests
