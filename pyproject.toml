@@ -28,6 +28,7 @@ dependencies = [
   "platformdirs",
   "pytest",
   "textnorm",
+  "validators"
 ]
 [project.urls]
 # "Homepage" = "https://github.com/pypa/sampleproject"
