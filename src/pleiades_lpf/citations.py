@@ -85,3 +85,19 @@ class Citation:
     def access_url(self, access_url: str):
         """Set the access URL for the cited work."""
         self._access_url = URLIdentifier(access_url)
+
+    def asdict(self) -> dict:
+        """Return a dictionary representation of the Citation."""
+        result = {
+            "@id": str(self.id),
+        }
+        if self.short_title:
+            result["short_title"] = self.short_title
+        if self.formatted_citation:
+            result["formatted_citation"] = self.formatted_citation
+        if self.access_url:
+            result["access_url"] = str(self.access_url)
+        if self.bibliographic_url:
+            result["bibliographic_url"] = str(self.bibliographic_url)
+
+        return result
