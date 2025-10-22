@@ -36,7 +36,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - Note that the structure outlined below deviates from LPF v1
     - [x] Stub the class (in citations.py)
     - [x] attributes, including those that need to be `Identifier`
-    - [ ] `asdict` function
+    - [x] `asdict` function
     - [ ] tests
     
 - [ ] FeatureType
