@@ -32,24 +32,10 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [ ] `asdict` function
     - [x] tests
 
-- [ ] CitedWork
-    - Note that the structure outlined below deviates from LPF v1
-    - [ ] Stub the class (in citations.py)
-    - [ ] attribute: `@id`: `Identifier`
-    - [ ] attribute: `short_title`: `str`
-    - [ ] attribute: `formatted_citation`: `str`
-    - [ ] attribute: `access_url`: `url`
-    - [ ] attribute: `bibliographic_url`: `url`
-    - [ ] `asdict` function
-    - [ ] tests
-
 - [ ] Citation
     - Note that the structure outlined below deviates from LPF v1
-    - [ ] Stub the class (in citations.py)
-    - [ ] attribute: `@id`: `Identifier`
-    - [ ] attribute: `work`: reference corresponding `CitedWork.@id`
-    - [ ] attribute: `citation_detail`: `str`
-    - [ ] attribute: `url`: `url`
+    - [x] Stub the class (in citations.py)
+    - [x] attributes, including those that need to be `Identifier`
     - [ ] `asdict` function
     - [ ] tests
     
@@ -64,6 +50,8 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [ ] attribute `When`
     - [ ] `asdict` function
     - [ ] tests
+
+- [x] Identifier
 
 - [ ] identify and stub other classes following GeoJSON and LPF specifications.
 
