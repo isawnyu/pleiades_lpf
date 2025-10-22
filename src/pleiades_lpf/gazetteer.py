@@ -9,6 +9,8 @@
 Define the underlying gazetteer data structure for Pleiades LPF.
 """
 import logging
+from .citations import Citation
+from .identifiers import Identifier
 
 logger = logging.getLogger(__name__)
 
@@ -184,3 +186,34 @@ class FeatureCollection:
     @property
     def type(self):
         return self._type
+
+
+class When:
+    """
+    LPF When.
+    """
+
+    def __init__(self, earliest: str = "", latest: str = ""):
+        pass
+
+
+class FeatureType:
+    """
+    LPF Feature Type.
+    """
+
+    # - [ ] attribute: `@id`: `Identifier`
+    # - [ ] attribute: `citations`: `list` of `Citation`s
+    # - [ ] attribute: `label`: `str`
+    # - [ ] attribute: `aliases`: `list` of `str`
+    # - [ ] attribute `When`
+    # - [ ] `asdict` function
+    def __init__(
+        self,
+        id: Identifier,
+        label: str,
+        citations: list[Citation] = [],
+        aliases: list[str] = [],
+        when: When | None = None,
+    ):
+        pass
