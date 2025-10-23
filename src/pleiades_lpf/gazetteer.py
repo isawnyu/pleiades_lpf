@@ -8,11 +8,25 @@
 """
 Define the underlying gazetteer data structure for Pleiades LPF.
 """
+from langstring import LangString, MultiLangString, Controller, GlobalFlag
 import logging
+import re
 from .citations import Citation
 from .identifiers import Identifier
+from .text import normalize_text
+
+# set default rules for LangStrings
+for true_flag in [
+    GlobalFlag.VALID_LANG,
+    GlobalFlag.LOWERCASE_LANG,
+    GlobalFlag.DEFINED_TEXT,
+    GlobalFlag.DEFINED_LANG,
+]:
+    Controller.set_flag(true_flag, True)
+
 
 logger = logging.getLogger(__name__)
+rx_lang_string = re.compile(r"^(?P<text>[^@]+?)(@(?P<lang>[a-zA-Z\-]+))?$")
 
 
 class LPFValueError(ValueError):
@@ -197,23 +211,174 @@ class When:
         pass
 
 
-class FeatureType:
+class FeatureClass:
     """
-    LPF Feature Type.
+    LPF Feature Class.
     """
 
-    # - [ ] attribute: `@id`: `Identifier`
-    # - [ ] attribute: `citations`: `list` of `Citation`s
-    # - [ ] attribute: `label`: `str`
-    # - [ ] attribute: `aliases`: `list` of `str`
-    # - [ ] attribute `When`
-    # - [ ] `asdict` function
     def __init__(
         self,
-        id: Identifier,
-        label: str,
-        citations: list[Citation] = [],
-        aliases: list[str] = [],
-        when: When | None = None,
+        id: str | Identifier,
+        label: LangString | str | dict,
+        label_lang: str = "",
+        citations: list[Citation | dict] = [],
+        aliases: list[LangString | str | dict] = [],
+        when: When | dict = dict(),
     ):
-        pass
+        self.id = id
+        self.set_label(label, label_lang)
+        if citations:
+            self.citations = citations
+        else:
+            self._citations = []
+        if aliases:
+            self.set_aliases(aliases)
+        else:
+            self._aliases = MultiLangString()
+
+    @property
+    def id(self) -> str:
+        """Get the feature type identifier."""
+        return str(self._id)
+
+    @id.setter
+    def id(self, id: str | Identifier):
+        """Set the feature type identifier."""
+        if isinstance(id, Identifier):
+            self._id = id
+        elif isinstance(id, str):
+            self._id = Identifier("alphanumeric", id)
+
+    @property
+    def label(self) -> LangString:
+        """Get the feature type label."""
+        return self._label
+
+    @label.setter
+    def label(self, label: str | LangString):
+        """Set the feature type label."""
+        self.set_label(label)
+
+    def set_label(self, label: str | LangString | dict, lang_tag: str = ""):
+        """Set the feature type label."""
+        if isinstance(label, LangString):
+            if lang_tag:
+                if lang_tag != "und" and label.lang == "und":
+                    # set the language tag if label lang is undefined
+                    label.lang = lang_tag
+                elif lang_tag != label.lang:
+                    raise LPFValueError(
+                        "FeatureType:label_lang does not match LangString language tag"
+                    )
+            self._label = LangString(normalize_text(label.text), label.lang)
+        elif isinstance(label, str):
+            m = rx_lang_string.match(label)
+            if m:
+                # handle "label@lang" format
+                label = m.group("text")
+                lang_tag = m.group("lang")
+            if lang_tag:
+                self._label = LangString(normalize_text(label), lang_tag)  # type: ignore
+            else:
+                self._label = LangString(normalize_text(label), "und")  # type: ignore
+        elif isinstance(label, dict):
+            self._label = LangString(
+                normalize_text(label.get("text", "")), label.get("lang", "und")
+            )
+        else:
+            raise LPFTypeError(
+                f"FeatureType:label must be a string or LangString, not {type(label)}"
+            )
+
+    @property
+    def citations(self) -> list[Citation]:
+        """Get the list of citations."""
+        return self._citations
+
+    @citations.setter
+    def citations(self, citations: list[Citation | dict]):
+        """Set the list of citations."""
+        if not isinstance(citations, list):
+            raise LPFTypeError(
+                f"FeatureType:citations must be a list of Citation objects, not {type(citations)}"
+            )
+        self._citations = []
+        for citation in citations:
+            if isinstance(citation, dict):
+                self._citations.append(Citation(**citation))
+            elif isinstance(citation, Citation):
+                self._citations.append(citation)
+            else:
+                raise LPFTypeError(
+                    f"FeatureType:citations must be a list of Citation objects, found {type(citation)} in position {i}"
+                )
+
+    @property
+    def aliases(self) -> MultiLangString:
+        """Get the list of aliases."""
+        return self._aliases
+
+    def add_alias(self, alias: str | LangString | dict, lang: str = "und"):
+        """Add a single alias."""
+        if isinstance(alias, LangString):
+            self._aliases.add_langstring(
+                LangString(normalize_text(alias.text), alias.lang)
+            )
+        elif isinstance(alias, str):
+            m = rx_lang_string.match(alias)
+            if m:
+                # handle "alias@lang" format
+                alias = m.group("text")
+                lang = m.group("lang")
+            if lang:
+                self._aliases.add_langstring(LangString(normalize_text(alias), lang))  # type: ignore
+            else:
+                self._aliases.add_langstring(LangString(normalize_text(alias), "und"))  # type: ignore
+        elif isinstance(alias, dict):
+            self._aliases.add_langstring(
+                LangString(
+                    normalize_text(alias.get("text", "")),
+                    alias.get("lang", "und"),
+                )
+            )
+        else:
+            raise LPFTypeError(
+                f"FeatureType:aliases must be strings or LangStrings, found {type(alias)}"
+            )
+
+    def set_aliases(
+        self, aliases: list[str | LangString | dict] | MultiLangString | dict
+    ):
+        """Set the list of aliases."""
+
+        self._aliases = MultiLangString()
+        if isinstance(aliases, MultiLangString):
+            for s in aliases.to_langstrings():
+                self.add_alias(s)
+        elif isinstance(aliases, dict):
+            for lang, lstrings in aliases.items():
+                for lstr in lstrings:
+                    self.add_alias(lstr, lang)
+        elif not isinstance(aliases, list):
+            raise LPFTypeError(
+                f"FeatureType:aliases must be a list of strings, not {type(aliases)}"
+            )
+        for alias in aliases:
+            self.add_alias(alias)
+
+    @property
+    def when(self) -> When:
+        """Get the When object."""
+        return self._when
+
+    @when.setter
+    def when(self, when: When | dict):
+        """Set the When object."""
+        if isinstance(when, When):
+            self._when = when
+        elif isinstance(when, dict):
+            self._when = When(**when)
+        else:
+            raise LPFTypeError(
+                f"FeatureType:when must be a When object or a dict, not {type(when)}"
+            )

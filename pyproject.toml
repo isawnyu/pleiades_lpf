@@ -25,6 +25,7 @@ classifiers = [
 ]
 dependencies = [
   "airtight",
+  "langstring[langcodes]",
   "platformdirs",
   "pytest",
   "textnorm",

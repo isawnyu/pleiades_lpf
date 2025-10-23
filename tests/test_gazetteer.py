@@ -9,8 +9,10 @@
 Test the gazetteer module.
 """
 
+from langstring import LangString, MultiLangString
 from pleiades_lpf.gazetteer import (
     Feature,
+    FeatureClass,
     FeatureCollection,
     LPFTypeError,
     LPFValueError,
@@ -74,3 +76,18 @@ class TestFeatureCollection:
         assert len(fc.features) == 2
         assert fc.features[0].properties["title"] == "Place 1"
         assert fc.features[1].properties["title"] == "Place 2"
+
+
+class TestFeatureClass:
+    def test_fc_creation(self):
+        fc = FeatureClass("foo", "bar")
+        assert isinstance(fc, FeatureClass)
+        label = fc.label
+        assert isinstance(label, LangString)
+        assert label == "bar"
+        assert label.lang == "und"
+        fc.add_alias("baz", "en")
+        assert len(fc.aliases) == 1
+        assert isinstance(fc.aliases, MultiLangString)
+        for s in fc.aliases.get_texts():
+            assert s in ["baz"]
