@@ -12,7 +12,7 @@ from langstring import LangString, MultiLangString, Controller, GlobalFlag
 import logging
 import re
 from .citations import Citation
-from .identifiers import Identifier
+from .identifiers import Identifier, make_identifier
 from .text import normalize_text
 
 # set default rules for LangStrings
@@ -247,7 +247,7 @@ class FeatureClass:
         if isinstance(id, Identifier):
             self._id = id
         elif isinstance(id, str):
-            self._id = Identifier("alphanumeric", id)
+            self._id = make_identifier(id)
 
     @property
     def label(self) -> LangString:

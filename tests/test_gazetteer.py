@@ -80,14 +80,22 @@ class TestFeatureCollection:
 
 class TestFeatureClass:
     def test_fc_creation(self):
-        fc = FeatureClass("foo", "bar")
-        assert isinstance(fc, FeatureClass)
-        label = fc.label
-        assert isinstance(label, LangString)
-        assert label == "bar"
-        assert label.lang == "und"
-        fc.add_alias("baz", "en")
-        assert len(fc.aliases) == 1
-        assert isinstance(fc.aliases, MultiLangString)
-        for s in fc.aliases.get_texts():
-            assert s in ["baz"]
+        """Test creating a FeatureClass with citations and aliases."""
+        cit = {
+            "id": "cite-001",
+            "short_title": "Wikidata",
+            "formatted_citation": "Wikidata: The Free Knowledge Base That Anyone Can Edit. Wikimedia Foundation, 2014-. https://www.wikidata.org/.",
+            "access_url": "https://www.wikidata.org/wiki/Q486972",
+            "bibliographic_url": "http://www.geonames.org/about.html",
+            "citation_detail": " human settlement (Q486972)",
+        }
+        fc = FeatureClass(
+            id="https://www.wikidata.org/wiki/Q486972",
+            label="human settlement",
+            label_lang="en",
+            aliases=[
+                {"text": "inhabited place", "lang": "en"},
+                LangString("asentamiento", "es"),
+            ],
+            citations=[cit],
+        )

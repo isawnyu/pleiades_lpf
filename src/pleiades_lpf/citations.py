@@ -9,8 +9,20 @@
 Define data model for citations in Pleiades LPF.
 """
 
-from .identifiers import Identifier, URLIdentifier, VALID_IDENTIFIER_TYPES
+from .identifiers import (
+    Identifier,
+    URLIdentifier,
+    VALID_IDENTIFIER_TYPES,
+    make_identifier,
+)
 from .text import normalize_text
+
+CITATION_TYPES = {
+    "dataSource": "http://purl.org/spar/cito/citesAsDataSource",
+    "evidence": "http://purl.org/spar/cito/citesAsEvidence",
+    "related": "http://purl.org/spar/cito/citesAsRelated",
+    "cites": "http://purl.org/spar/cito/cites",
+}
 
 
 class Citation:
@@ -20,11 +32,13 @@ class Citation:
 
     def __init__(
         self,
-        id: str,
+        id: Identifier | str,
         short_title: str = "",
         formatted_citation: str = "",
         access_url: str = "",
         bibliographic_url: str = "",
+        citation_detail: str = "",
+        reason: str = "cites",
     ):
         self.id = id
         if short_title:
@@ -43,16 +57,24 @@ class Citation:
             self.bibliographic_url = bibliographic_url
         else:
             self._bibliographic_url = ""
+        if citation_detail:
+            self.citation_detail = citation_detail
+        else:
+            self._citation_detail = ""
+        self.reason = reason
 
     @property
-    def id(self) -> str:
+    def id(self) -> Identifier:
         """Get the citation identifier."""
-        return str(self._id)
+        return self._id
 
     @id.setter
-    def id(self, id: str):
+    def id(self, id: str | Identifier):
         """Set the citation identifier."""
-        self._id = Identifier("alphanumeric", id)
+        if isinstance(id, Identifier):
+            self._id = id
+        else:
+            self._id = make_identifier(id)
 
     @property
     def short_title(self) -> str:
@@ -86,11 +108,41 @@ class Citation:
         """Set the access URL for the cited work."""
         self._access_url = URLIdentifier(access_url)
 
+    @property
+    def bibliographic_url(self) -> str:
+        """Get the bibliographic URL for the cited work."""
+        return str(self._bibliographic_url)
+
+    @bibliographic_url.setter
+    def bibliographic_url(self, bibliographic_url: str):
+        """Set the bibliographic URL for the cited work."""
+        self._bibliographic_url = URLIdentifier(bibliographic_url)
+
+    @property
+    def citation_detail(self) -> str:
+        """Get additional citation detail."""
+        return self._citation_detail
+
+    @citation_detail.setter
+    def citation_detail(self, citation_detail: str):
+        """Set additional citation detail."""
+        self._citation_detail = normalize_text(citation_detail)
+
+    @property
+    def reason(self) -> str:
+        """Get the reason for the citation."""
+        return self._reason
+
+    @reason.setter
+    def reason(self, reason: str):
+        """Set the reason for the citation."""
+        if reason not in CITATION_TYPES:
+            raise ValueError(f"Invalid citation reason: {reason}")
+        self._reason = reason
+
     def asdict(self) -> dict:
         """Return a dictionary representation of the Citation."""
-        result = {
-            "@id": str(self.id),
-        }
+        result = {"@id": str(self.id), "reason": self.reason}
         if self.short_title:
             result["short_title"] = self.short_title
         if self.formatted_citation:
@@ -99,5 +151,6 @@ class Citation:
             result["access_url"] = str(self.access_url)
         if self.bibliographic_url:
             result["bibliographic_url"] = str(self.bibliographic_url)
-
+        if self.citation_detail:
+            result["citation_detail"] = self.citation_detail
         return result

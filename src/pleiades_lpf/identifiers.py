@@ -9,9 +9,35 @@
 Define identification classes
 """
 from .text import normalize_text
+import re
 from validators import url as validate_url
 
-VALID_IDENTIFIER_TYPES = {"url", "alphanumeric"}
+VALID_IDENTIFIER_TYPES = {"url", "alphanumeric", "alphanumeric-delimited"}
+
+
+def make_identifier(value: str, id_type: str = "") -> "Identifier":
+    """
+    Factory function to create an Identifier.
+    """
+    delims = r"\-_,:\."
+    delimited_pattern = rf"^[A-Za-z0-9{delims}]+$"
+    if id_type == "url":
+        return URLIdentifier(value)
+    elif id_type == "alphanumeric":
+        return Identifier(id_type, value)
+    elif id_type == "alphanumeric-delimited":
+        return Identifier(id_type, value)
+    elif id_type == "":
+        if validate_url(value):
+            return URLIdentifier(value)
+        elif bool(re.match(delimited_pattern, value)):
+            return Identifier("alphanumeric-delimited", value)
+        else:
+            return Identifier("alphanumeric", value)
+    else:
+        raise ValueError(
+            f"Invalid identifier type: '{id_type}'. Expected one of {VALID_IDENTIFIER_TYPES}."
+        )
 
 
 class Identifier:
