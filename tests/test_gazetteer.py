@@ -99,3 +99,6 @@ class TestFeatureClass:
             ],
             citations=[cit],
         )
+        assert fc.id == "https://www.wikidata.org/wiki/Q486972"
+        assert fc.label.text == "human settlement"
+        assert fc.label.lang == "en"

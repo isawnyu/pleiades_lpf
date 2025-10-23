@@ -272,11 +272,12 @@ class FeatureClass:
                     )
             self._label = LangString(normalize_text(label.text), label.lang)
         elif isinstance(label, str):
-            m = rx_lang_string.match(label)
-            if m:
-                # handle "label@lang" format
-                label = m.group("text")
-                lang_tag = m.group("lang")
+            if not lang_tag:
+                m = rx_lang_string.match(label)
+                if m:
+                    # handle "label@lang" format
+                    label = m.group("text")
+                    lang_tag = m.group("lang")
             if lang_tag:
                 self._label = LangString(normalize_text(label), lang_tag)  # type: ignore
             else:
