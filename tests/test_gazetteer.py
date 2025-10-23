@@ -102,3 +102,7 @@ class TestFeatureClass:
         assert fc.id == "https://www.wikidata.org/wiki/Q486972"
         assert fc.label.text == "human settlement"
         assert fc.label.lang == "en"
+        assert len(fc.aliases) == 2
+        assert isinstance(fc.aliases, MultiLangString)
+        assert fc.aliases["en"] == {"inhabited place"}
+        assert fc.aliases["es"] == {"asentamiento"}
