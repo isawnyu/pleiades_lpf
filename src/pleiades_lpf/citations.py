@@ -16,6 +16,7 @@ from .identifiers import (
     make_identifier,
 )
 from .text import normalize_text
+from urllib.parse import urlparse
 
 CITATION_TYPES = {
     "dataSource": "http://purl.org/spar/cito/citesAsDataSource",
@@ -23,6 +24,7 @@ CITATION_TYPES = {
     "related": "http://purl.org/spar/cito/citesAsRelated",
     "cites": "http://purl.org/spar/cito/cites",
 }
+BIBLIOGRAPHIC_URL_NETLOCS = {"www.zotero.org", "search.worldcat.org"}
 
 
 class Citation:
@@ -116,6 +118,11 @@ class Citation:
     @bibliographic_url.setter
     def bibliographic_url(self, bibliographic_url: str):
         """Set the bibliographic URL for the cited work."""
+        parts = urlparse(bibliographic_url)
+        if parts.netloc not in BIBLIOGRAPHIC_URL_NETLOCS:
+            raise ValueError(
+                f"Bibliographic URL '{bibliographic_url}' must be from a recognized bibliographic service. Recognized domains are: {', '.join(BIBLIOGRAPHIC_URL_NETLOCS)}"
+            )
         self._bibliographic_url = URLIdentifier(bibliographic_url)
 
     @property

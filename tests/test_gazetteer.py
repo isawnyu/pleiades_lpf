@@ -86,7 +86,7 @@ class TestFeatureClass:
             "short_title": "Wikidata",
             "formatted_citation": "Wikidata: The Free Knowledge Base That Anyone Can Edit. Wikimedia Foundation, 2014-. https://www.wikidata.org/.",
             "access_url": "https://www.wikidata.org/wiki/Q486972",
-            "bibliographic_url": "http://www.geonames.org/about.html",
+            "bibliographic_url": "https://www.zotero.org/groups/2533/items/BCQIKDKS",
             "citation_detail": " human settlement (Q486972)",
         }
         fc = FeatureClass(
@@ -106,3 +106,17 @@ class TestFeatureClass:
         assert isinstance(fc.aliases, MultiLangString)
         assert fc.aliases["en"] == {"inhabited place"}
         assert fc.aliases["es"] == {"asentamiento"}
+        assert len(fc.citations) == 1
+        assert str(fc.citations[0].id) == "cite-001"
+        assert fc.citations[0].access_url == "https://www.wikidata.org/wiki/Q486972"
+        assert (
+            fc.citations[0].bibliographic_url
+            == "https://www.zotero.org/groups/2533/items/BCQIKDKS"
+        )
+        assert (
+            fc.citations[0].formatted_citation
+            == "Wikidata: The Free Knowledge Base That Anyone Can Edit. Wikimedia Foundation, 2014-. https://www.wikidata.org/."
+        )
+        assert (
+            fc.citations[0].citation_detail == "human settlement (Q486972)"
+        )  # NB space normalized
