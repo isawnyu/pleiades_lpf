@@ -10,6 +10,7 @@ Define the underlying gazetteer data structure for Pleiades LPF.
 """
 from langstring import LangString, MultiLangString, Controller, GlobalFlag
 import logging
+from pprint import pformat
 import re
 from slugify import slugify
 from .citations import Citation
@@ -103,7 +104,7 @@ class Feature:
 
     @property
     def types(self):
-        return self._type
+        return self._types
 
     @types.setter
     def types(self, types: list[FeatureType | dict]):
@@ -243,16 +244,27 @@ class FeatureType:
         citations: list[Citation | dict] = [],
         aliases: list[LangString | str | dict] = [],
         when: When | dict = dict(),
+        sourceLabels: list[LangString | str | dict] = [],  # lpf v1 (stored as aliases)
         sourceLabel: str = "",  # whg variant (treated as an alias)
         identifier: str = "",  # lpf v1 (stored as id)
         id: str | Identifier = "",  # pleiades extension: alternative to identifier
-        gn_class: str = "",  # whg variant: geonames feature class (ignored)
+        **kwargs,  # kwargs are ignored
     ):
+        if kwargs:
+            logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
+
+        # LPF v1 "label"
+        if not label and not sourceLabel:
+            raise LPFValueError(
+                "FeatureType: either label or sourceLabel must be provided"
+            )
         if sourceLabel and not label:
-            # use sourceLabel as label if no label provided (WHG does this)
+            # use sourceLabel as label if no label provided (WHG variant)
             self.set_label(sourceLabel)
         else:
             self.set_label(label, label_lang)
+
+        # LPF v1 "identifier"
         if not id and not identifier:
             # generate id from label
             generated_id = slugify(self.label.text)
@@ -261,27 +273,39 @@ class FeatureType:
             )
             self.id = generated_id
         elif not id and identifier:
+            # LPF v1 identifier provided
             self.id = identifier
         elif id and not identifier:
+            # Pleiades variant id provided
             self.id = id
         elif isinstance(id, str) and id == identifier:
+            # both provided and match (id is a string)
             self.id = id
         elif isinstance(id, Identifier) and str(id) == identifier:
+            # both provided and match (id is an Identifier)
             self.id = id
         else:
             raise LPFValueError(
                 f"FeatureType id ({id}) and identifier ({identifier}) do not match"
             )
+
+        # Pleiades variant: citations
         self._citations = []
         if citations:
             self.citations = citations
         else:
             self._citations = []
+
+        # LPF v1 sourceLabels (Pleiades variant aliases)
         self._aliases = MultiLangString()
         if aliases:
             self.set_aliases(aliases)
-        else:
-            self._aliases = MultiLangString()
+        elif sourceLabels:
+            self.set_aliases(sourceLabels)
+        elif aliases and sourceLabels:
+            self.set_aliases(aliases)
+            for sl in sourceLabels:
+                self.add_alias(sl)
         if label and sourceLabel and label != sourceLabel:
             # treat sourceLabel as an alias
             self.add_alias(sourceLabel)
@@ -322,7 +346,7 @@ class FeatureType:
                     raise LPFValueError(
                         "FeatureType:label_lang does not match LangString language tag"
                     )
-            self._label = LangString(normalize_text(label.text), label.lang)
+            self._label = LangString(normalize_text(label.text.lower()), label.lang)
         elif isinstance(label, str):
             if not lang_tag:
                 m = rx_lang_string.match(label)
@@ -331,12 +355,12 @@ class FeatureType:
                     label = m.group("text")
                     lang_tag = m.group("lang")
             if lang_tag:
-                self._label = LangString(normalize_text(label), lang_tag)  # type: ignore
+                self._label = LangString(normalize_text(label.lower()), lang_tag)  # type: ignore
             else:
-                self._label = LangString(normalize_text(label), "und")  # type: ignore
+                self._label = LangString(normalize_text(label.lower()), "und")  # type: ignore
         elif isinstance(label, dict):
             self._label = LangString(
-                normalize_text(label.get("text", "")), label.get("lang", "und")
+                normalize_text(label.get("text", "")).lower(), label.get("lang", "und")
             )
         else:
             raise LPFTypeError(
@@ -435,3 +459,27 @@ class FeatureType:
             raise LPFTypeError(
                 f"FeatureType:when must be a When object or a dict, not {type(when)}"
             )
+
+    def asdict(self, mode="full") -> dict:
+        """Return a dictionary representation of the FeatureType."""
+        source_labels = [
+            {"label": alias.text, "lang": alias.lang}
+            for alias in self.aliases.to_langstrings()
+        ]
+        source_labels.append({"label": self.label.text, "lang": self.label.lang})
+        result = {
+            "identifier": str(self.id),
+            "label": self.label.text,
+            "sourceLabels": source_labels,
+            "when": None,  # implement when.asdict() when When is implemented
+        }
+        if mode == "full":
+            result["citations"] = [citation.asdict() for citation in self.citations]
+            result["aliases"] = [
+                {"label": alias.text, "lang": alias.lang}
+                for alias in self.aliases.to_langstrings()
+            ]
+
+        if self.id:
+            result["@id"] = str(self.id)
+        return result
