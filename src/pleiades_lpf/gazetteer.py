@@ -11,6 +11,7 @@ Define the underlying gazetteer data structure for Pleiades LPF.
 from langstring import LangString, MultiLangString, Controller, GlobalFlag
 import logging
 import re
+from slugify import slugify
 from .citations import Citation
 from .identifiers import Identifier, make_identifier
 from .text import normalize_text
@@ -62,7 +63,7 @@ class Feature:
         geometry: Geometry | None = None,
         properties: dict = dict(),
         id: str | int | None = None,
-        types: list = [dict],
+        types: list[FeatureType | dict] = [],
         **kwargs,  # kwargs are ignored
     ):
         # GeoJSON spec
@@ -112,7 +113,7 @@ class Feature:
                 f"Feature:types must be a list of FeatureType objects or dicts, not {type(types)}"
             )
         self._types = []
-        for t in types:
+        for i, t in enumerate(types):
             if isinstance(t, dict):
                 self._types.append(FeatureType(**t))
             elif isinstance(t, FeatureType):
@@ -237,23 +238,53 @@ class FeatureType:
 
     def __init__(
         self,
-        id: str | Identifier,
         label: LangString | str | dict,
         label_lang: str = "",
         citations: list[Citation | dict] = [],
         aliases: list[LangString | str | dict] = [],
         when: When | dict = dict(),
+        sourceLabel: str = "",  # whg variant (treated as an alias)
+        identifier: str = "",  # lpf v1 (stored as id)
+        id: str | Identifier = "",  # pleiades extension: alternative to identifier
+        gn_class: str = "",  # whg variant: geonames feature class (ignored)
     ):
-        self.id = id
-        self.set_label(label, label_lang)
+        if sourceLabel and not label:
+            # use sourceLabel as label if no label provided (WHG does this)
+            self.set_label(sourceLabel)
+        else:
+            self.set_label(label, label_lang)
+        if not id and not identifier:
+            # generate id from label
+            generated_id = slugify(self.label.text)
+            logger.warning(
+                f"FeatureType: no id or identifier provided, generating id '{generated_id}' from label '{self.label.text}'"
+            )
+            self.id = generated_id
+        elif not id and identifier:
+            self.id = identifier
+        elif id and not identifier:
+            self.id = id
+        elif isinstance(id, str) and id == identifier:
+            self.id = id
+        elif isinstance(id, Identifier) and str(id) == identifier:
+            self.id = id
+        else:
+            raise LPFValueError(
+                f"FeatureType id ({id}) and identifier ({identifier}) do not match"
+            )
+        self._citations = []
         if citations:
             self.citations = citations
         else:
             self._citations = []
+        self._aliases = MultiLangString()
         if aliases:
             self.set_aliases(aliases)
         else:
             self._aliases = MultiLangString()
+        if label and sourceLabel and label != sourceLabel:
+            # treat sourceLabel as an alias
+            self.add_alias(sourceLabel)
 
     @property
     def id(self) -> str:
@@ -280,6 +311,8 @@ class FeatureType:
 
     def set_label(self, label: str | LangString | dict, lang_tag: str = ""):
         """Set the feature type label."""
+        if not label:
+            return
         if isinstance(label, LangString):
             if lang_tag:
                 if lang_tag != "und" and label.lang == "und":

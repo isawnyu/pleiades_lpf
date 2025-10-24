@@ -28,6 +28,7 @@ dependencies = [
   "langstring[langcodes]",
   "platformdirs",
   "pytest",
+  "python-slugify",
   "textnorm",
   "validators"
 ]
