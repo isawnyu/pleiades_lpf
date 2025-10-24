@@ -8,6 +8,7 @@
 """
 Text handling utilities for Pleiades LPF."""
 
+
 from textnorm import normalize_space, normalize_unicode
 
 

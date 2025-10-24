@@ -211,9 +211,9 @@ class When:
         pass
 
 
-class FeatureClass:
+class FeatureType:
     """
-    LPF Feature Class.
+    LPF Feature Type.
     """
 
     def __init__(

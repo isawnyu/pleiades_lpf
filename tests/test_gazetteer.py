@@ -12,8 +12,8 @@ Test the gazetteer module.
 from langstring import LangString, MultiLangString
 from pleiades_lpf.gazetteer import (
     Feature,
-    FeatureClass,
     FeatureCollection,
+    FeatureType,
     LPFTypeError,
     LPFValueError,
 )
@@ -78,7 +78,7 @@ class TestFeatureCollection:
         assert fc.features[1].properties["title"] == "Place 2"
 
 
-class TestFeatureClass:
+class TestFeatureType:
     def test_fc_creation(self):
         """Test creating a FeatureClass with citations and aliases."""
         cit = {
@@ -89,7 +89,7 @@ class TestFeatureClass:
             "bibliographic_url": "https://www.zotero.org/groups/2533/items/BCQIKDKS",
             "citation_detail": " human settlement (Q486972)",
         }
-        fc = FeatureClass(
+        ft = FeatureType(
             id="https://www.wikidata.org/wiki/Q486972",
             label="human settlement",
             label_lang="en",
@@ -99,24 +99,24 @@ class TestFeatureClass:
             ],
             citations=[cit],
         )
-        assert fc.id == "https://www.wikidata.org/wiki/Q486972"
-        assert fc.label.text == "human settlement"
-        assert fc.label.lang == "en"
-        assert len(fc.aliases) == 2
-        assert isinstance(fc.aliases, MultiLangString)
-        assert fc.aliases["en"] == {"inhabited place"}
-        assert fc.aliases["es"] == {"asentamiento"}
-        assert len(fc.citations) == 1
-        assert str(fc.citations[0].id) == "cite-001"
-        assert fc.citations[0].access_url == "https://www.wikidata.org/wiki/Q486972"
+        assert ft.id == "https://www.wikidata.org/wiki/Q486972"
+        assert ft.label.text == "human settlement"
+        assert ft.label.lang == "en"
+        assert len(ft.aliases) == 2
+        assert isinstance(ft.aliases, MultiLangString)
+        assert ft.aliases["en"] == {"inhabited place"}
+        assert ft.aliases["es"] == {"asentamiento"}
+        assert len(ft.citations) == 1
+        assert str(ft.citations[0].id) == "cite-001"
+        assert ft.citations[0].access_url == "https://www.wikidata.org/wiki/Q486972"
         assert (
-            fc.citations[0].bibliographic_url
+            ft.citations[0].bibliographic_url
             == "https://www.zotero.org/groups/2533/items/BCQIKDKS"
         )
         assert (
-            fc.citations[0].formatted_citation
+            ft.citations[0].formatted_citation
             == "Wikidata: The Free Knowledge Base That Anyone Can Edit. Wikimedia Foundation, 2014-. https://www.wikidata.org/."
         )
         assert (
-            fc.citations[0].citation_detail == "human settlement (Q486972)"
+            ft.citations[0].citation_detail == "human settlement (Q486972)"
         )  # NB space normalized
