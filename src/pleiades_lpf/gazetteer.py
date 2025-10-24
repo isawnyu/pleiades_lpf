@@ -62,6 +62,7 @@ class Feature:
         geometry: Geometry | None = None,
         properties: dict = dict(),
         id: str | int | None = None,
+        types: list = [dict],
         **kwargs,  # kwargs are ignored
     ):
         # GeoJSON spec
@@ -75,7 +76,7 @@ class Feature:
         # LPF extensions
         self.when = dict()  # Temporal information
         self.names = []  # List of names
-        self.types = []  # List of types
+        self.types = types  # List of types
         self.links = []  # List of links to other resources
         self.relations = []  # List of relations to other features
         self.descriptions = []  # List of descriptions
@@ -100,8 +101,26 @@ class Feature:
         return result
 
     @property
-    def type(self):
+    def types(self):
         return self._type
+
+    @types.setter
+    def types(self, types: list[FeatureType | dict]):
+        """Set the list of feature types."""
+        if not isinstance(types, list):
+            raise LPFTypeError(
+                f"Feature:types must be a list of FeatureType objects or dicts, not {type(types)}"
+            )
+        self._types = []
+        for t in types:
+            if isinstance(t, dict):
+                self._types.append(FeatureType(**t))
+            elif isinstance(t, FeatureType):
+                self._types.append(t)
+            else:
+                raise LPFTypeError(
+                    f"Feature:types must be a list of FeatureType objects or dicts, found {type(t)} in position {i}"
+                )
 
     def _validate_properties(self, properties: dict = dict()):
         """

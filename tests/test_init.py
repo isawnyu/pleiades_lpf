@@ -32,4 +32,5 @@ class TestModule:
         assert f.properties["title"] == "Rahat Salak"
         assert f.properties["ccodes"] == ["TD"]
         assert f.properties["fclasses"] == []
+        # assert f.types
         # add more here as gazetteer module is expanded
