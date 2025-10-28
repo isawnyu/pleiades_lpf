@@ -57,6 +57,15 @@ class LPFTypeError(TypeError):
     pass
 
 
+class When:
+    """
+    LPF When.
+    """
+
+    def __init__(self, earliest: str = "", latest: str = ""):
+        pass
+
+
 class Geometry:
     """
     GeoJSON Geometry.
@@ -64,12 +73,22 @@ class Geometry:
     """
 
     def __init__(
-        self, type: str, coordinates: list = [], certainty: str | None = None, **kwargs
+        self,
+        type: str,
+        coordinates: list = [],
+        certainty: str | None = None,
+        when: When | dict = dict(),
+        **kwargs,
     ):
+        # GeoJSON spec
         self._shape = shape({"type": type, "coordinates": coordinates})
+
+        # LPF extension
         self._certainty = None
         if certainty is not None:
             self.certainty = certainty  # LPF extension to GeoJSON
+        if when:
+            raise NotImplementedError("Geometry:when is not yet implemented")
         if kwargs:
             logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
 
@@ -299,15 +318,6 @@ class FeatureCollection:
     @property
     def type(self):
         return self._type
-
-
-class When:
-    """
-    LPF When.
-    """
-
-    def __init__(self, earliest: str = "", latest: str = ""):
-        pass
 
 
 class FeatureType:
