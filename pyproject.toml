@@ -29,6 +29,7 @@ dependencies = [
   "platformdirs",
   "pytest",
   "python-slugify",
+  "shapely",
   "textnorm",
   "validators"
 ]

@@ -14,6 +14,7 @@ from pleiades_lpf.gazetteer import (
     Feature,
     FeatureCollection,
     FeatureType,
+    Geometry,
     LPFTypeError,
     LPFValueError,
 )
@@ -120,3 +121,11 @@ class TestFeatureType:
         assert (
             ft.citations[0].citation_detail == "human settlement (Q486972)"
         )  # NB space normalized
+
+
+class TestGeometry:
+    def test_geometry_creation(self):
+        """Test creating a Geometry object."""
+        geom = Geometry(type="Point", coordinates=[102.0, 0.5])
+        assert geom.type == "Point"
+        assert geom.coordinates == (102.0, 0.5)

@@ -12,6 +12,7 @@ from langstring import LangString, MultiLangString, Controller, GlobalFlag
 import logging
 from pprint import pformat
 import re
+from shapely.geometry import shape
 from slugify import slugify
 from typing import override
 
@@ -32,6 +33,15 @@ for true_flag in [
 
 logger = logging.getLogger(__name__)
 rx_lang_string = re.compile(r"^(?P<text>[^@]+?)(@(?P<lang>[a-zA-Z\-]+))?$")
+GEOMETRY_TYPES = {
+    "Point",
+    "MultiPoint",
+    "LineString",
+    "MultiLineString",
+    "Polygon",
+    "MultiPolygon",
+    "GeometryCollection",
+}
 
 
 class LPFValueError(ValueError):
@@ -52,8 +62,16 @@ class Geometry:
     https://datatracker.ietf.org/doc/html/rfc7946#section-3.1
     """
 
-    def __init__(self):
-        pass
+    def __init__(self, type: str, coordinates: list = [], **kwargs):
+        self._shape = shape({"type": type, "coordinates": coordinates})
+
+    @property
+    def type(self):
+        return self._shape.geom_type
+
+    @property
+    def coordinates(self):
+        return self._shape.__geo_interface__["coordinates"]
 
 
 class Feature:
