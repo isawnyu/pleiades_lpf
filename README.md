@@ -22,6 +22,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
         - [ ] methods for adding/getting parts of the `properties` attribute (implement as needed)
     - [x] `geometry` attribute
     - [x] tests
+    - [x] augment
 
 - [ ] FeatureCollection
     - [x] Stub the class (in gazetteer.py)
@@ -31,6 +32,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [x] Attribute validation?
     - [ ] `asdict` function
     - [x] tests
+    - [x] augment
 
 - [ ] Citation
     - Note that the structure outlined below deviates from LPF v1
@@ -38,6 +40,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [x] attributes, including those that need to be `Identifier`
     - [x] `asdict` function
     - [ ] tests
+    - [x] augment
     
 - [ ] FeatureType
     - Note that the structure outlined below deviates from LPF v1
@@ -49,6 +52,7 @@ At present, still a long way to go on fleshing out the gazetteer model. Tests pa
     - [ ] attribute `When`
     - [ ] `asdict` function
     - [ ] tests
+    - [x] augment
 
 - [x] Identifier
 
