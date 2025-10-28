@@ -129,3 +129,4 @@ class TestGeometry:
         geom = Geometry(type="Point", coordinates=[102.0, 0.5])
         assert geom.type == "Point"
         assert geom.coordinates == (102.0, 0.5)
+        assert geom.asdict() == {"type": "Point", "coordinates": (102.0, 0.5)}

@@ -64,6 +64,8 @@ class Geometry:
 
     def __init__(self, type: str, coordinates: list = [], **kwargs):
         self._shape = shape({"type": type, "coordinates": coordinates})
+        if kwargs:
+            logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
 
     @property
     def type(self):
@@ -72,6 +74,10 @@ class Geometry:
     @property
     def coordinates(self):
         return self._shape.__geo_interface__["coordinates"]
+
+    def asdict(self):
+        """Return a dictionary representation of the Geometry."""
+        return {"type": self.type, "coordinates": self.coordinates}
 
 
 class Feature:
