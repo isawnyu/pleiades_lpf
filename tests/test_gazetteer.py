@@ -63,6 +63,22 @@ class TestFeature:
         with raises(LPFTypeError):
             Feature(properties=props)
 
+    def test_feature_geometry(self):
+        """Test that geometry can be assigned and retrieved."""
+        props = {"title": "Test Place", "ccodes": ["US"], "fclasses": ["P"]}
+        geom = Geometry(type="Point", coordinates=[102.0, 0.5])
+        feature = Feature(properties=props, geometry=geom)
+        assert feature.geometry == geom
+
+    def test_feature_geometry_dict(self):
+        """Test that geometry can be assigned as a dict."""
+        props = {"title": "Test Place", "ccodes": ["US"], "fclasses": ["P"]}
+        geom_dict = {"type": "Point", "coordinates": [102.0, 0.5]}
+        feature = Feature(properties=props, geometry=geom_dict)
+        assert isinstance(feature.geometry, Geometry)
+        assert feature.geometry.type == "Point"
+        assert feature.geometry.coordinates == (102.0, 0.5)
+
 
 class TestFeatureCollection:
     def test_feature_collection_creation(self):

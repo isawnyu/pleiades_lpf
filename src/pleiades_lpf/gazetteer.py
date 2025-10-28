@@ -88,7 +88,7 @@ class Feature:
 
     def __init__(
         self,
-        geometry: Geometry | None = None,
+        geometry: Geometry | dict | None = None,
         properties: dict = dict(),
         id: str | int | None = None,
         types: list[FeatureType | dict] = [],
@@ -97,7 +97,9 @@ class Feature:
 
         # GeoJSON spec
         self._type = "Feature"  # Fixed value
-        self.geometry = geometry  # Geometry object or None
+        self._geometry = None  # Geometry object or None
+        if geometry:
+            self.geometry = geometry
         if properties:
             self._validate_properties(properties)
         self.properties = properties  # Dictionary of properties
@@ -135,6 +137,22 @@ class Feature:
         # Augment each FeatureType
         for ft in self.types:
             ft.augment()
+
+    @property
+    def geometry(self):
+        return self._geometry
+
+    @geometry.setter
+    def geometry(self, geometry: Geometry | dict):
+        """Set the Geometry object."""
+        if isinstance(geometry, dict):
+            self._geometry = Geometry(**geometry)
+        elif isinstance(geometry, Geometry):
+            self._geometry = geometry
+        else:
+            raise LPFTypeError(
+                f"Feature:geometry must be a Geometry object or a dict, not {type(geometry)}"
+            )
 
     @property
     def types(self):

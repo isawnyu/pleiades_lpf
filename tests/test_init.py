@@ -13,7 +13,7 @@ import json
 import logging
 from pathlib import Path
 from pleiades_lpf import dump, dumps, load, loads
-from pleiades_lpf.gazetteer import FeatureCollection, FeatureType
+from pleiades_lpf.gazetteer import FeatureCollection, FeatureType, Geometry
 from pprint import pformat
 from pytest import raises
 
@@ -31,21 +31,27 @@ class TestModule:
         assert isinstance(fc, FeatureCollection)
         assert isinstance(fc, FeatureCollection)
         assert len(fc.features) == 1
+
         f = fc.features[0]
+
         assert f.properties["title"] == "Rahat Salak"
         assert f.properties["ccodes"] == ["TD"]
         assert f.properties["fclasses"] == []
+
         assert isinstance(f.types, list)
         for ft in f.types:
             assert isinstance(ft, FeatureType)
         assert len(f.types) == 1
+        assert f.types[0].label == "settlement"
+
+        assert isinstance(f.geometry, Geometry)
+        assert f.geometry.type == "Point"
+        assert f.geometry.coordinates == (18.1333333, 14.2333333)
         import logging
         from pprint import pformat
 
         logger = logging.getLogger(__name__)
         logger.debug(pformat([t.asdict() for t in f.types], indent=2))
-        # assert f.types
-        # add more here as gazetteer module is expanded
 
 
 class TestAugment:
