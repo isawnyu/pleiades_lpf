@@ -42,12 +42,17 @@ class Citation:
         bibliographic_url: str = "",
         citation_detail: str = "",
         reason: str = "cites",
+        label: str = "",  # LPF convention
     ):
         self.id = id
         if short_title:
             self.short_title = short_title
+        elif label:
+            self.short_title = label
         else:
             self._short_title = ""
+        if short_title and label:
+            raise ValueError("Cannot specify both short_title and label")
         if formatted_citation:
             self.formatted_citation = formatted_citation
         else:

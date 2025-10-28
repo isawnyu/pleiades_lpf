@@ -51,7 +51,7 @@ class TestModule:
         from pprint import pformat
 
         logger = logging.getLogger(__name__)
-        logger.debug(pformat([t.asdict() for t in f.types], indent=2))
+        logger.debug(pformat(fc.asdict(), indent=2))
 
 
 class TestAugment:
@@ -68,4 +68,4 @@ class TestAugment:
         c = fcoll.features[0].types[0].citations[0]
         assert c.short_title == "Getty AAT"
         logger = logging.getLogger(__name__)
-        logger.debug(pformat(c.asdict(), indent=2))
+        logger.debug(pformat(fcoll.asdict(), indent=2))

@@ -78,6 +78,8 @@ class Geometry:
         coordinates: list = [],
         certainty: str | None = None,
         when: When | dict = dict(),
+        citation: Citation | dict = dict(),
+        citations: list[Citation | dict] = [],
         **kwargs,
     ):
         # GeoJSON spec
@@ -92,6 +94,17 @@ class Geometry:
         if kwargs:
             logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
 
+        # WHG extension
+        self._citations = []
+        if citation:
+            # LPF v1 style single citation
+            self.add_citation(citation)
+
+        # Pleiades extension
+        if citations:
+            for cit in citations:
+                self.add_citation(cit)
+
     @property
     def certainty(self):
         return self._certainty
@@ -103,6 +116,24 @@ class Geometry:
                 f"Geometry:certainty must be one of {CERTAINTY_LEVELS}, not '{certainty}'"
             )
         self._certainty = certainty
+
+    @property
+    def citations(self) -> list[Citation]:
+        """Get the list of citations."""
+        return self._citations
+
+    def add_citation(self, citation: Citation | dict = {}, **kwargs):
+        """Add a single citation."""
+        if not citation and kwargs:
+            self._citations.append(Citation(**kwargs))
+        if isinstance(citation, Citation):
+            self._citations.append(citation)
+        elif isinstance(citation, dict):
+            self._citations.append(Citation(**citation))
+        elif citation:
+            raise LPFTypeError(
+                f"Geometry:citations must be Citation objects, not {type(citation)}"
+            )
 
     @property
     def coordinates(self):
@@ -117,6 +148,8 @@ class Geometry:
         d = {"type": self.type, "coordinates": self.coordinates}
         if self.certainty is not None:
             d["certainty"] = self.certainty
+        if self.citations:
+            d["citations"] = [cit.asdict() for cit in self.citations]
         return d
 
 
@@ -157,12 +190,12 @@ class Feature:
     def asdict(self):
         """Return a dictionary representation of the Feature."""
         result = {
-            "types": self.types,
+            "type": self._type,
             "properties": self.properties,
-            # "geometry": self.geometry,
+            "geometry": self.geometry.asdict() if self.geometry else None,
             # "when": self.when,
             # "names": self.names,
-            # "types": self.types,
+            "types": [t.asdict() for t in self.types],
             # "links": self.links,
             # "relations": self.relations,
             # "descriptions": self.descriptions,
