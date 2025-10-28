@@ -426,14 +426,14 @@ class FeatureType:
                 f"FeatureType:citations must be a list of Citation objects, not {type(citations)}"
             )
         self._citations = []
-        for citation in citations:
+        for idx, citation in enumerate(citations):
             if isinstance(citation, dict):
                 self._citations.append(Citation(**citation))
             elif isinstance(citation, Citation):
                 self._citations.append(citation)
             else:
                 raise LPFTypeError(
-                    f"FeatureType:citations must be a list of Citation objects, found {type(citation)} in position {i}"
+                    f"FeatureType:citations must be a list of Citation objects, found {type(citation)} in position {idx}"
                 )
 
     def add_citation(self, citation: Citation | dict):
