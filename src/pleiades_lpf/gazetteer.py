@@ -42,6 +42,7 @@ GEOMETRY_TYPES = {
     "MultiPolygon",
     "GeometryCollection",
 }
+CERTAINTY_LEVELS = {"certain", "less-certain", "uncertain"}
 
 
 class LPFValueError(ValueError):
@@ -62,22 +63,42 @@ class Geometry:
     https://datatracker.ietf.org/doc/html/rfc7946#section-3.1
     """
 
-    def __init__(self, type: str, coordinates: list = [], **kwargs):
+    def __init__(
+        self, type: str, coordinates: list = [], certainty: str | None = None, **kwargs
+    ):
         self._shape = shape({"type": type, "coordinates": coordinates})
+        self._certainty = None
+        if certainty is not None:
+            self.certainty = certainty  # LPF extension to GeoJSON
         if kwargs:
             logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
 
     @property
-    def type(self):
-        return self._shape.geom_type
+    def certainty(self):
+        return self._certainty
+
+    @certainty.setter
+    def certainty(self, certainty: str | None):
+        if certainty not in CERTAINTY_LEVELS:
+            raise LPFValueError(
+                f"Geometry:certainty must be one of {CERTAINTY_LEVELS}, not '{certainty}'"
+            )
+        self._certainty = certainty
 
     @property
     def coordinates(self):
         return self._shape.__geo_interface__["coordinates"]
 
+    @property
+    def type(self):
+        return self._shape.geom_type
+
     def asdict(self):
         """Return a dictionary representation of the Geometry."""
-        return {"type": self.type, "coordinates": self.coordinates}
+        d = {"type": self.type, "coordinates": self.coordinates}
+        if self.certainty is not None:
+            d["certainty"] = self.certainty
+        return d
 
 
 class Feature:
