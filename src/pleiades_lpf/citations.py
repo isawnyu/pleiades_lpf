@@ -23,6 +23,7 @@ CITATION_TYPES = {
     "evidence": "http://purl.org/spar/cito/citesAsEvidence",
     "related": "http://purl.org/spar/cito/citesAsRelated",
     "cites": "http://purl.org/spar/cito/cites",
+    "closeMatch": "http://www.w3.org/2008/05/skos-xl#closeMatch",
 }
 BIBLIOGRAPHIC_URL_NETLOCS = {"www.zotero.org", "search.worldcat.org"}
 

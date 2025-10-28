@@ -8,10 +8,13 @@
 """
 Test loading/dumping.
 """
+from copy import deepcopy
 import json
+import logging
 from pathlib import Path
 from pleiades_lpf import dump, dumps, load, loads
 from pleiades_lpf.gazetteer import FeatureCollection, FeatureType
+from pprint import pformat
 from pytest import raises
 
 test_data_dir = Path(__file__).parent / "data"
@@ -43,3 +46,20 @@ class TestModule:
         logger.debug(pformat([t.asdict() for t in f.types], indent=2))
         # assert f.types
         # add more here as gazetteer module is expanded
+
+
+class TestAugment:
+    def test_augment_fc(self):
+        """Test augmenting FeatureCollection."""
+        filename = "whg_7637009.json"
+        filepath = test_data_dir / filename
+        with open(filepath, "r", encoding="utf-8") as f:
+            fcoll = load(f)
+        del f
+        assert len(fcoll.features[0].types[0].citations) == 0
+        fcoll.augment()
+        assert len(fcoll.features[0].types[0].citations) == 1
+        c = fcoll.features[0].types[0].citations[0]
+        assert c.short_title == "Getty AAT"
+        logger = logging.getLogger(__name__)
+        logger.debug(pformat(c.asdict(), indent=2))

@@ -25,22 +25,22 @@ import json
 from .gazetteer import FeatureCollection
 
 
-def dump(obj, fp, **kwargs):
+def dump(obj, fp, **kwargs) -> None:
     """Serialize LPF object to a file-like object as JSON."""
     return json.dump(obj, fp, **kwargs)
 
 
-def dumps(obj, **kwargs):
+def dumps(obj, **kwargs) -> str:
     """Serialize LPF object to a JSON string."""
     return json.dumps(obj, **kwargs)
 
 
-def load(fp, **kwargs):
+def load(fp, **kwargs) -> FeatureCollection:
     """Deserialize LPF object from a file-like object containing JSON."""
     j = json.load(fp, **kwargs)
     return FeatureCollection(**j)
 
 
-def loads(s, **kwargs):
+def loads(s, **kwargs) -> FeatureCollection:
     """Deserialize LPF object from a JSON string."""
     return json.loads(s, **kwargs)

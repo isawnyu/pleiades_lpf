@@ -13,6 +13,9 @@ import logging
 from pprint import pformat
 import re
 from slugify import slugify
+from typing import override
+
+from .aat import AATMatcher
 from .citations import Citation
 from .identifiers import Identifier, make_identifier
 from .text import normalize_text
@@ -67,6 +70,7 @@ class Feature:
         types: list[FeatureType | dict] = [],
         **kwargs,  # kwargs are ignored
     ):
+
         # GeoJSON spec
         self._type = "Feature"  # Fixed value
         self.geometry = geometry  # Geometry object or None
@@ -87,7 +91,7 @@ class Feature:
     def asdict(self):
         """Return a dictionary representation of the Feature."""
         result = {
-            "type": self.type,
+            "types": self.types,
             "properties": self.properties,
             # "geometry": self.geometry,
             # "when": self.when,
@@ -101,6 +105,12 @@ class Feature:
         if self.id is not None:
             result["@id"] = self.id  # LPF uses @id for identifiers
         return result
+
+    def augment(self):
+        """Augment the Feature."""
+        # Augment each FeatureType
+        for ft in self.types:
+            ft.augment()
 
     @property
     def types(self):
@@ -218,6 +228,11 @@ class FeatureCollection:
             "@context": self.context,
         }
 
+    def augment(self):
+        """Augment the FeatureCollection and its Features."""
+        for feature in self.features:
+            feature.augment()
+
     @property
     def type(self):
         return self._type
@@ -252,6 +267,9 @@ class FeatureType:
     ):
         if kwargs:
             logger.warning(f"ignoring unexpected kwargs: {pformat(kwargs, indent=2)}")
+
+        # tools for augmentation if needed
+        self._aat_matcher = AATMatcher()
 
         # LPF v1 "label"
         if not label and not sourceLabel:
@@ -309,6 +327,34 @@ class FeatureType:
         if label and sourceLabel and label != sourceLabel:
             # treat sourceLabel as an alias
             self.add_alias(sourceLabel)
+
+    def augment(self):
+        """Augment the FeatureType."""
+        # Example augmentation: match label against AAT terms
+        matched_aat_ids = self._aat_matcher.match(self.label, self.aliases)
+        match_len = len(matched_aat_ids)
+        if match_len == 0:
+            return
+        if match_len == 1:
+            matched_aat_id = matched_aat_ids[0]
+
+        elif "300008347" in [maid[0] for maid in matched_aat_ids]:
+            # prefer "settlement" if multiple matches
+            matched_aat_id = ("300008347", "inhabited places")
+        else:
+            raise NotImplementedError(
+                f"FeatureType '{self.label.text}' matched multiple AAT term IDs: {matched_aat_ids}"
+            )
+        citation = Citation(
+            id=f"aat:{matched_aat_id[0]}",
+            short_title="Getty AAT",
+            formatted_citation="The Getty Research Institute. “Art & Architecture Thesaurus.” 2017. https://www.getty.edu/research/tools/vocabularies/aat/.",
+            access_url=f"https://vocab.getty.edu/aat/{matched_aat_id[0]}",
+            bibliographic_url="https://www.zotero.org/groups/2533/items/FLDP5U84",
+            citation_detail=f"{matched_aat_id[0]}: {matched_aat_id[1]}",
+            reason="closeMatch",
+        )
+        self.add_citation(citation)
 
     @property
     def id(self) -> str:
@@ -389,6 +435,17 @@ class FeatureType:
                 raise LPFTypeError(
                     f"FeatureType:citations must be a list of Citation objects, found {type(citation)} in position {i}"
                 )
+
+    def add_citation(self, citation: Citation | dict):
+        """Add a single citation."""
+        if isinstance(citation, dict):
+            self._citations.append(Citation(**citation))
+        elif isinstance(citation, Citation):
+            self._citations.append(citation)
+        else:
+            raise LPFTypeError(
+                f"FeatureType:citations must be Citation objects, not {type(citation)}"
+            )
 
     @property
     def aliases(self) -> MultiLangString:
